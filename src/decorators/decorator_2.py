@@ -6,4 +6,12 @@ Nie zmieniaj docstringów metod specjalnych (takich jak __init__, czy __repr__).
 
 
 def deco_doc(new_docstring):
-    pass
+
+    def wrapped(cls):
+        public_method_names = [method for method in dir(cls) if callable(getattr(cls, method)) if not method.startswith('_')]
+
+        for method in public_method_names:
+            getattr(cls, method).__doc__ = new_docstring
+        return cls
+    return wrapped
+

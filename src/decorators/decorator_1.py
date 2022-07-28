@@ -6,7 +6,31 @@ powinna natomiast zwrócić string, z komunikatem:
 gdzie nazwa_funkcji jest nazwą dekorowanej funkcji.
 """
 from functools import wraps
-
+import inspect
 
 def require_typing(fn):
-    pass
+
+    is_all_params = True
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        inspect_result = inspect.getfullargspec(fn)
+        params = list(inspect_result[0])
+        type_hints = inspect_result[6]
+
+        params.append('return')
+
+        print(params)
+        print(type_hints.keys())
+
+        nonlocal is_all_params
+        for param in params:
+            if param not in list(type_hints.keys()):
+                is_all_params = False
+
+        if not is_all_params:
+            return f"Add typing to function {fn.__name__}, please!"
+        else:
+            return fn(*args, **kwargs)
+
+    return wrapper
